@@ -42,8 +42,8 @@ class Connector:
     def __init__(self, from_node: Node, to_node: Node, output_index: int, input_index: int, d_type: str):
         if from_node is None or to_node is None:
             raise ReferenceError("Connected nodes cannot be none")
-        self.from_node = from_node
-        self.to_node = to_node
+        self.from_node: Node = from_node
+        self.to_node: Node = to_node
         self.output_index = output_index
         self.input_index = input_index
         self.data_type = d_type

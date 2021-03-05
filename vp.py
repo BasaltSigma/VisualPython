@@ -62,12 +62,16 @@ def compute_width(node: node_map.Node) -> int:
     return length * 9
 
 
+def compute_height(node: node_map.Node) -> int:
+    return TITLE_COLOURED_WINDOW_HEIGHT + (max(len(node.inputs), len(node.outputs), 1) * 30)
+
+
 def redraw(canvas: tk.Canvas, current_node_map: node_map.NodeMap, offset_x: int, offset_y: int):
     canvas.delete("all")
     for widget in canvas.winfo_children():
         widget.destroy()
     for node in current_node_map.nodes:
-        height = TITLE_COLOURED_WINDOW_HEIGHT + (max(len(node.inputs), len(node.outputs), 1) * 30)
+        height = compute_height(node) # TITLE_COLOURED_WINDOW_HEIGHT + (max(len(node.inputs), len(node.outputs), 1) * 30)
         width = compute_width(node) + 10
         hh: int = int(height / 2)
         hw: int = int(width / 2)
@@ -107,7 +111,19 @@ def redraw(canvas: tk.Canvas, current_node_map: node_map.NodeMap, offset_x: int,
             chkbox.pack()
             chkbox.place(x=((x - hw) + 3), y=((y - hh) + TITLE_COLOURED_WINDOW_HEIGHT + 3))
     for connector in current_node_map.connectors:
-        pass
+        first_x = (connector.from_node.x + (compute_width(connector.from_node) / 2)) - 7
+        first_y = (connector.from_node.y - (compute_height(connector.from_node) / 2)) + INITIAL_VERTICAL_OFFSET + \
+                  ((connector.output_index - 1) * VERTICAL_PARAMETER_SPACING)
+        last_x = (connector.to_node.x - (compute_width(connector.to_node) / 2)) + 8
+        last_y = (connector.to_node.y - (compute_height(connector.to_node) / 2)) + INITIAL_VERTICAL_OFFSET + \
+                 ((connector.input_index - 1) * VERTICAL_PARAMETER_SPACING)
+        first_x = first_x - offset_x
+        first_y = first_y - offset_y
+        last_x = last_x - offset_x
+        last_y = last_y - offset_y
+        canvas.create_line(first_x, first_y, first_x - ((first_x - last_x) / 4), first_y, first_x - ((first_x - last_x) / 2),
+                           first_y - ((first_y - last_y) / 2), first_x - (((first_x - last_x) / 4) * 3), last_y, last_x,
+                           last_y, width=2, smooth=True, fill=type_colours[connector.data_type])
 
 
 def set_node_val(node: basic_nodes.ConstantNode, val):
