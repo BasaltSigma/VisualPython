@@ -23,6 +23,66 @@ class StartNode(Node):
         pass
 
 
+class IfElseNode(Node):
+
+    def __init__(self, x, y):
+        super().__init__("Branch", Node.CONTROL_FLOW_NODE, x, y)
+        self.inputs.append((Node.EXEC_TYPE, "Exec"))
+        self.inputs.append((Node.BOOL_TYPE, "Condition"))
+        self.outputs.append((Node.EXEC_TYPE, "True"))
+        self.outputs.append((Node.EXEC_TYPE, "False"))
+
+    def behaviour(self, input_list: list):
+        pass
+
+
+class BooleanAndNode(Node):
+
+    def __init__(self, x, y):
+        super().__init__("Boolean AND", Node.MATHEMATICAL_NODE, x, y)
+        self.inputs.append((Node.BOOL_TYPE, "A"))
+        self.inputs.append((Node.BOOL_TYPE, "B"))
+        self.outputs.append((Node.BOOL_TYPE, "Result"))
+
+    def behaviour(self, input_list: list):
+        return input_list[0] and input_list[1]
+
+
+class BooleanOrNode(Node):
+
+    def __init__(self, x, y):
+        super().__init__("Boolean OR", Node.MATHEMATICAL_NODE, x, y)
+        self.inputs.append((Node.BOOL_TYPE, "A"))
+        self.inputs.append((Node.BOOL_TYPE, "B"))
+        self.outputs.append((Node.BOOL_TYPE, "Result"))
+
+    def behaviour(self, input_list: list):
+        return input_list[0] or input_list[1]
+
+
+class BooleanNotNode(Node):
+
+    def __init__(self, x, y):
+        super().__init__("Boolean NOT", Node.MATHEMATICAL_NODE, x, y)
+        self.inputs.append((Node.BOOL_TYPE, "Input"))
+        self.outputs.append((Node.BOOL_TYPE, "Result"))
+
+    def behaviour(self, input_list: list):
+        return not input_list[0]
+
+
+class BooleanXorNode(Node):
+
+    def __init__(self, x, y):
+        super().__init__("Boolean XOR", Node.MATHEMATICAL_NODE, x, y)
+        self.inputs.append((Node.BOOL_TYPE, "A"))
+        self.inputs.append((Node.BOOL_TYPE, "B"))
+        self.outputs.append((Node.BOOL_TYPE, "Result"))
+
+    def behaviour(self, input_list: list):
+        return (input_list[0] or input_list[1]) and not (input_list[0] and input_list[1])
+
+
 class ConstantNode(Node):
 
     def __init__(self, display_name, x, y, value, val_type):

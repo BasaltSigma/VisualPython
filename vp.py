@@ -1,6 +1,7 @@
 import tkinter as tk
 import node_map
 import basic_nodes
+import vp_executor
 
 node_colours = {node_map.Node.DEFAULT_FUNCTION_NODE: "#bc56b4",
                 node_map.Node.CONTROL_FLOW_NODE: "#ababab",
@@ -244,5 +245,8 @@ current_map.add_node(basic_nodes.StartNode(500, 300))
 current_map.add_node(basic_nodes.ConstantFloatNode(400, 400))
 current_map.add_node(basic_nodes.ConstantBoolNode(600, 200))
 current_map.add_node(basic_nodes.PrintNode(200, 300))
+current_map.add_node(basic_nodes.IfElseNode(600, 600))
+current_map.add_node(basic_nodes.PrintNode(700, 600))
+executor = vp_executor.Executor(current_map)
 redraw(work_area, current_map, mi.current_x, mi.current_y)
 gui.mainloop()
