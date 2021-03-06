@@ -1,7 +1,9 @@
 import tkinter as tk
+import tkinter.ttk as ttk
 import node_map
 import basic_nodes
 import vp_executor
+import node_registry as nr
 
 node_colours = {node_map.Node.DEFAULT_FUNCTION_NODE: "#bc56b4",
                 node_map.Node.CONTROL_FLOW_NODE: "#ababab",
@@ -37,6 +39,7 @@ def create_gui(mi_instance):
     canvas.bind("<Button-1>", mi_instance.on_mouse_1_down_for_canvas)
     canvas.bind("<B1-Motion>", mi_instance.on_mouse_1_dragged_for_canvas)
     canvas.bind("<ButtonRelease-1>", mi_instance.on_mouse_1_released_for_canvas)
+    canvas.bind("<Button-3>", mi_instance.on_mouse_2_clicked_for_canvas)
     return window, canvas
 
 
@@ -171,8 +174,12 @@ class MouseInteraction:
         self.movement = True
         self.drawing_connector = False
         self.moving_node = False
+        self.treeview = None
 
     def on_mouse_1_down_for_canvas(self, event):
+        if self.treeview is not None:
+            self.treeview.destroy()
+            self.treeview = None
         l = [work_area.itemcget(obj, 'tags') for obj in work_area.find_overlapping(event.x, event.y, event.x, event.y)]
         if len(l) > 1:
             if l[1].__contains__('|'):
@@ -237,16 +244,39 @@ class MouseInteraction:
             self.movement = True
             MouseInteraction.current_node_id = None
 
+    def on_mouse_2_clicked_for_canvas(self, event):
+        if self.treeview is not None:
+            self.treeview.destroy()
+            self.treeview = None
+        self.treeview = ttk.Treeview(work_area)
+        self.treeview.column("#0", width=150, minwidth=150, stretch=tk.NO)
+        self.treeview.heading("#0", text="Function Name", anchor=tk.W)
+        count = 1
+        for category in nr.all_nodes:
+            current = self.treeview.insert("", index=count, text=category[0], values=())
+            for node in category[1]:
+                temp = node(0, 0)
+                self.treeview.insert(current, index="end", text=temp.display_name, values=node)
+                del temp
+            count = count + 1
+        self.treeview.pack()
+        self.treeview.place(x=event.x, y=event.y)
+        self.treeview.bind("<Double-1>", self.on_treeview_item_double_clicked)
+
+    def on_treeview_item_double_clicked(self, event):
+        item = self.treeview.selection()[0]
+        class_path = self.treeview.item(item, "values")[1][1:-2]
+        class_name = str.split(class_path, ".")[1]
+        current_map.add_node(nr.factory(class_name)(event.x, event.y))
+        self.treeview.destroy()
+        self.treeview = None
+        redraw(work_area, current_map, self.current_x, self.current_y)
+
 
 mi = MouseInteraction()
 gui, work_area = create_gui(mi)
 current_map = node_map.NodeMap()
 current_map.add_node(basic_nodes.StartNode(500, 300))
-current_map.add_node(basic_nodes.ConstantFloatNode(400, 400))
-current_map.add_node(basic_nodes.ConstantBoolNode(600, 200))
-current_map.add_node(basic_nodes.PrintNode(200, 300))
-current_map.add_node(basic_nodes.IfElseNode(600, 600))
-current_map.add_node(basic_nodes.PrintNode(700, 600))
 executor = vp_executor.Executor(current_map)
 redraw(work_area, current_map, mi.current_x, mi.current_y)
 gui.mainloop()
