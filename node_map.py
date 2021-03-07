@@ -67,6 +67,17 @@ class NodeMap:
                 return node
         raise ValueError("node with id " + str(specified_id) + " not found")
 
+    def find_attached_connector(self, node: Node, output=True, line=1) -> Connector:
+        if output:
+            for connector in self.connectors:
+                if connector.from_node == node and connector.output_index == line:
+                    return connector
+        else:
+            for connector in self.connectors:
+                if connector.to_node == node and connector.input_index == line:
+                    return connector
+        return None
+
     def save_nodemap(self, filename):
         with open("./" + filename + ".vpy", "w+") as my_file:
             my_file.write(filename)

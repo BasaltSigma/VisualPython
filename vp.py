@@ -32,6 +32,7 @@ def create_gui(mi_instance):
     toolbar.pack(fill=tk.X)
     run_button = tk.Button(toolbar, text="Run")
     run_button.pack(side=tk.LEFT)
+    run_button.bind("<Button-1>", executor.execute_start)
     save_button = tk.Button(toolbar, text="Save")
     save_button.pack(side=tk.LEFT)
     canvas = tk.Canvas()
@@ -104,7 +105,7 @@ def redraw(canvas: tk.Canvas, current_node_map: node_map.NodeMap, offset_x: int,
             vertical_offset = vertical_offset + VERTICAL_PARAMETER_SPACING
             current_line = current_line + 1
         if isinstance(node, (basic_nodes.ConstantFloatNode, basic_nodes.ConstantIntNode, basic_nodes.ConstantStringNode)):
-            field = tk.Entry(canvas, width=12)
+            field = tk.Entry(canvas, width=11)
             field.bind("<Return>", lambda event: set_node_val(node, field.get()))
             field.pack()
             field.place(x=((x - hw) + 3), y=((y - hh) + TITLE_COLOURED_WINDOW_HEIGHT + 5))
@@ -274,9 +275,9 @@ class MouseInteraction:
 
 
 mi = MouseInteraction()
-gui, work_area = create_gui(mi)
 current_map = node_map.NodeMap()
-current_map.add_node(basic_nodes.StartNode(500, 300))
 executor = vp_executor.Executor(current_map)
+gui, work_area = create_gui(mi)
+current_map.add_node(basic_nodes.StartNode(500, 300))
 redraw(work_area, current_map, mi.current_x, mi.current_y)
 gui.mainloop()
