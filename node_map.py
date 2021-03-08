@@ -25,7 +25,6 @@ class Node:
         self.y = y
         self.display_name = display_name
         self.id = Node.curr_id
-        Node.curr_id = Node.curr_id + 1
         self.inputs = []    # list of tuples of format (type, name)
         self.outputs = []   # ditto
         self.node_type = node_type
@@ -35,6 +34,18 @@ class Node:
 
     def behaviour(self, input_list: list):
         raise NotImplemented()
+
+
+class ConstantNode(Node):
+
+    def __init__(self, display_name, x, y, value, val_type):
+        super().__init__(display_name, Node.VARIABLE_NODE, x, y)
+        self.val_type = val_type
+        self.val = value
+        self.outputs.append((val_type, "Value"))
+
+    def behaviour(self, input_list: list):
+        return self.val
 
 
 class Connector:
@@ -56,7 +67,9 @@ class NodeMap:
         self.connectors = []
 
     def add_node(self, node: Node):
+        Node.curr_id = Node.curr_id + 1
         self.nodes.append(node)
+        node.id = Node.curr_id
 
     def add_connector(self, connector: Connector):
         self.connectors.append(connector)
@@ -80,6 +93,16 @@ class NodeMap:
 
     def save_nodemap(self, filename):
         with open("./" + filename + ".vpy", "w+") as my_file:
-            my_file.write(filename)
+            my_file.write(filename + '\n')
+            print(str(len(self.nodes)) + "," + str(len(self.connectors)))
             for node in self.nodes:
-                pass
+                node_name = str.split(str(node), ' ')[0][1:]
+                built_node = "node{" + str(node.id) + "," + node_name + ',x=' + str(node.x) + ",y=" + str(node.y)
+                if isinstance(node, ConstantNode):
+                    built_node += ",var=" + str(node.val)
+                built_node += '}\n'
+                my_file.write(built_node)
+            for connector in self.connectors:
+                built_connector = "connector{" + str(connector.from_node.id) + ',' + str(connector.to_node.id) + ','
+                built_connector += str(connector.output_index) + ',' + str(connector.input_index) + ',' + connector.data_type + '}\n'
+                my_file.write(built_connector)

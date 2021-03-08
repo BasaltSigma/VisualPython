@@ -35,6 +35,7 @@ def create_gui(mi_instance):
     run_button.bind("<Button-1>", executor.execute_start)
     save_button = tk.Button(toolbar, text="Save")
     save_button.pack(side=tk.LEFT)
+    save_button.bind("<Button-1>", mi_instance.on_save_button_clicked)
     canvas = tk.Canvas()
     canvas.pack(fill=tk.BOTH, expand=1)
     canvas.bind("<Button-1>", mi_instance.on_mouse_1_down_for_canvas)
@@ -272,6 +273,9 @@ class MouseInteraction:
         self.treeview.destroy()
         self.treeview = None
         redraw(work_area, current_map, self.current_x, self.current_y)
+
+    def on_save_button_clicked(self, event):
+        current_map.save_nodemap("untitled")
 
 
 mi = MouseInteraction()

@@ -1,4 +1,4 @@
-from node_map import Node
+from node_map import Node, ConstantNode
 
 
 class PrintNode(Node):
@@ -81,19 +81,6 @@ class BooleanXorNode(Node):
 
     def behaviour(self, input_list: list):
         return (input_list[0] or input_list[1]) and not (input_list[0] and input_list[1])
-
-
-class ConstantNode(Node):
-
-    def __init__(self, display_name, x, y, value, val_type):
-        super().__init__(display_name, Node.VARIABLE_NODE, x, y)
-        self.val_type = val_type
-        self.val = value
-        self.outputs.append((val_type, "Value"))
-
-    def behaviour(self, input_list: list):
-        return self.val
-
 
 class ConstantIntNode(ConstantNode):
 
