@@ -122,9 +122,9 @@ def load_node_map(path):
                 trimmed_node = line[5:-1]
                 nparams = str.split(trimmed_node, ',')
                 class_name = str.split(nparams[1], '.')[1]
+                Node.curr_id = int(nparams[0]) - 1  # because add_node increments this before assignment too
                 instance = factory(class_name)
-                node = instance(int(str.split(nparams[2], '=')[1]), int(str.split(nparams[3], '=')[1][:-1]))
-                node.id = int(nparams[0])
+                node: Node = instance(int(str.split(nparams[2], '=')[1]), int(str.split(nparams[3], '=')[1][:-1]))
                 if isinstance(node, ConstantNode):
                     node.val_type = str.split(nparams[5], '=')[1][:-1]
                     value_to_assign = str.split(nparams[4], '=')[1]
