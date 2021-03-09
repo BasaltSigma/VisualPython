@@ -26,7 +26,7 @@ type_colours = {node_map.Node.EXEC_TYPE: "#ffffff",
 
 def create_gui(mi_instance):
     window = tk.Tk()
-    window.title("Visual Python: untitled.vpy")
+    window.title("Visual Python: basic_list_append.vpy")
     window.geometry("1280x860")
     toolbar = tk.Frame()
     toolbar.pack(fill=tk.X)
@@ -36,6 +36,9 @@ def create_gui(mi_instance):
     save_button = tk.Button(toolbar, text="Save")
     save_button.pack(side=tk.LEFT)
     save_button.bind("<Button-1>", mi_instance.on_save_button_clicked)
+    load_button = tk.Button(toolbar, text="Load")
+    load_button.pack(side=tk.LEFT)
+    load_button.bind("<Button-1>", mi_instance.on_load_button_clicked)
     canvas = tk.Canvas()
     canvas.pack(fill=tk.BOTH, expand=1)
     canvas.bind("<Button-1>", mi_instance.on_mouse_1_down_for_canvas)
@@ -276,6 +279,11 @@ class MouseInteraction:
 
     def on_save_button_clicked(self, event):
         current_map.save_nodemap("untitled")
+
+    def on_load_button_clicked(self, event):
+        global current_map
+        current_map = node_map.load_node_map("map_examples/basic_list_append.vpy")
+        redraw(work_area, current_map, 0, 0)
 
 
 mi = MouseInteraction()

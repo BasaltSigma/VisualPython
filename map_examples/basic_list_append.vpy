@@ -1,0 +1,16 @@
+basic_list_append
+node{1,basic_nodes.StartNode,x=500,y=300}
+node{2,basic_nodes.EmptyListNode,x=514,y=370}
+node{3,basic_nodes.ListAppendNode,x=742,y=353}
+node{4,basic_nodes.ConstantStringNode,x=491,y=459,var=Henlo,val_type=str}
+node{5,basic_nodes.ListAppendNode,x=1100,y=351}
+node{6,basic_nodes.ConstantStringNode,x=820,y=469,var=Goodbai,val_type=str}
+node{7,basic_nodes.PrintNode,x=1178,y=507}
+connector{1,3,1,1,exec}
+connector{2,3,1,2,list}
+connector{4,3,1,3,str}
+connector{3,5,1,1,exec}
+connector{3,5,2,2,list}
+connector{6,5,1,3,str}
+connector{5,7,1,1,exec}
+connector{5,7,2,2,list}

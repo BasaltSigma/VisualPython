@@ -99,10 +99,51 @@ class NodeMap:
                 node_name = str.split(str(node), ' ')[0][1:]
                 built_node = "node{" + str(node.id) + "," + node_name + ',x=' + str(node.x) + ",y=" + str(node.y)
                 if isinstance(node, ConstantNode):
-                    built_node += ",var=" + str(node.val)
+                    built_node += ",var=" + str(node.val) + ",val_type=" + node.val_type
                 built_node += '}\n'
                 my_file.write(built_node)
             for connector in self.connectors:
                 built_connector = "connector{" + str(connector.from_node.id) + ',' + str(connector.to_node.id) + ','
                 built_connector += str(connector.output_index) + ',' + str(connector.input_index) + ',' + connector.data_type + '}\n'
                 my_file.write(built_connector)
+
+
+def begins_with(input_str: str, sequence: str) -> bool:
+    return input_str[0:len(sequence)] == sequence
+
+
+def load_node_map(path):
+    from node_registry import factory
+    new_node_map = NodeMap()
+    with open(path, "r") as my_file:
+        lines: list = my_file.read().splitlines()
+        for line in lines:
+            if begins_with(line, "node"):
+                trimmed_node = line[5:-1]
+                nparams = str.split(trimmed_node, ',')
+                class_name = str.split(nparams[1], '.')[1]
+                instance = factory(class_name)
+                node = instance(int(str.split(nparams[2], '=')[1]), int(str.split(nparams[3], '=')[1][:-1]))
+                node.id = int(nparams[0])
+                if isinstance(node, ConstantNode):
+                    node.val_type = str.split(nparams[5], '=')[1][:-1]
+                    value_to_assign = str.split(nparams[4], '=')[1]
+                    if class_name == "ConstantBoolNode":
+                        node.val = bool(value_to_assign)
+                    elif class_name == "ConstantFloatNode":
+                        node.val = float(value_to_assign)
+                    elif class_name == "ConstantIntNode":
+                        node.val = int(value_to_assign)
+                    else:
+                        node.val = value_to_assign
+                new_node_map.add_node(node)
+            elif begins_with(line, "connector"):
+                trimmed_connector = line[10:-1]
+                params = str.split(trimmed_connector, ',')
+                new_node_map.add_connector(Connector(new_node_map.find_node_by_id(int(params[0])),
+                                                     new_node_map.find_node_by_id(int(params[1])), int(params[2]),
+                                                     int(params[3]), params[4]))
+            else:
+                continue
+    Node.curr_id = len(new_node_map.nodes) + 1
+    return new_node_map
